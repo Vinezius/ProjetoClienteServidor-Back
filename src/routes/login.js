@@ -1,24 +1,48 @@
 const express = require("express");
 const router = express();
+const { fazerConsulta, con } = require("../utils/database/index");
 require('dotenv').config();
 
 router.use(express.json());
 
-router.post("/", (req, res) => {
-    const { registro, senha } = req.body;
-    const token = req.headers.authorization;
-    token === process.env.TOKEN ? isValidToken = true : isValidToken = false;
+router.post("/", async (req, res) => {
+    try {
+        const { registro, senha } = req.body;
+        const token = req.headers.authorization;
+        const sql= `SELECT * FROM usuarios where registro = '${registro}' and senhaUsuario like '%${senha}%'`;
+        let isValidToken = false;
+        let resultadoQuery = [];
 
-    res.header("Access-Control-Allow-Origin", "*");
-    if(isValidToken){
-        res.status(200).send({ 
-            token: "Y9G4q^$@ws8!okusX$&xrn!4usEHt5Uw@qDs5Cc8v$2ze57HCV8@d#MfZ%7%6&6x",
-            message: "Login efetuado com sucesso",
-            success: true
-     });
-    }else{
-        res.status(401).send({
-            message: "Credenciais inválidas",
+        con.connect(function(err) {
+            console.log("Conectado ao banco de dados!");
+            fazerConsulta(sql).then((result) => {
+                resultadoQuery = result;
+                if(token === process.env.TOKEN) isValidToken = true;
+                if(isValidToken && resultadoQuery.length > 0) {
+                    res.status(200).send({ 
+                        token: "Y9G4q^$@ws8!okusX$&xrn!4usEHt5Uw@qDs5Cc8v$2ze57HCV8@d#MfZ%7%6&6x",
+                        message: "Login efetuado com sucesso",
+                        success: true,
+                        tipo_usuario: resultadoQuery[0].tipoUsuario
+                    });
+                } else {
+                    res.status(401).send({
+                        message: "Credenciais inválidas",
+                        success: false
+                    });
+                }
+            }).catch((error) => {
+                console.log(error);
+                res.status(401).send({
+                    message: "Erro interno do servidor",
+                    success: false
+                });
+            });
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            message: "Erro interno do servidor",
             success: false
         });
     }
