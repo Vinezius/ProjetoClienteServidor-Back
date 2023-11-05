@@ -14,5 +14,6 @@ server.use(cors(corsOptions));
 server.use("/login", login);
 server.use("/logout", logout);
 server.use("/usuarios", usuarios);
+server.use("/usuarios/:registro", usuarios);
 server.options(cors(corsOptions));
 server.listen(3333, () => console.log('Ouvindo na porta 3333'));
