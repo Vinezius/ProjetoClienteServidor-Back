@@ -8,7 +8,7 @@ router.use(express.json());
 router.post("/", async (req, res) => {
     try {
         const { registro, senha } = req.body;
-        const sql= `SELECT * FROM usuarios where registro = '${registro}' and senhaUsuario like '%${senha}%'`;
+        const sql= `SELECT * FROM usuarios where registro = '${registro}' and senha like '%${senha}%'`;
         let resultadoQuery = [];
 
         con.connect(function(err) {
@@ -20,7 +20,7 @@ router.post("/", async (req, res) => {
                         token: "Y9G4q^$@ws8!okusX$&xrn!4usEHt5Uw@qDs5Cc8v$2ze57HCV8@d#MfZ%7%6&6x",
                         message: "Login efetuado com sucesso",
                         success: true,
-                        tipo_usuario: resultadoQuery[0].tipoUsuario
+                        registro: resultadoQuery[0].registro
                     });
                 } else {
                     res.status(401).send({
