@@ -4,6 +4,7 @@ const server = express();
 const login = require('./src/routes/login');
 const logout = require('./src/routes/logout');
 const usuarios = require('./src/routes/usuarios');
+const pontos = require('./src/routes/pontos');
 const prompt = require('prompt');
 
 prompt.start();
@@ -17,6 +18,8 @@ prompt.get(['portaConexao'], function (err, result) {
     server.use("/logout", logout);
     server.use("/usuarios", usuarios);
     server.use("/usuarios/:registro", usuarios);
+    server.use("/pontos", pontos);
+    server.use("/pontos/:id", pontos);
     server.listen(portaConexao, () => console.log(`Ouvindo na porta ${portaConexao}`));
 });
 
