@@ -9,7 +9,19 @@ router.get('/:id', async (req, res) => {
         const token = req.headers.authorization;
         token === process.env.TOKEN ? isValidToken = true : isValidToken = false;
         const id = req.params.id;
-        const sql = `SELECT * FROM segmentos WHERE segmento_id = '${id}'`;
+        const sql = `
+        SELECT 
+            segmento.segmento_id,
+            segmento.status,
+            segmento.distancia,
+            segmento.direcao,
+            ponto_inicial.nome AS ponto_inicial,
+            ponto_final.nome AS ponto_final
+        FROM segmentos AS segmento
+        INNER JOIN pontos AS ponto_inicial ON segmento.ponto_inicial = ponto_inicial.ponto_id
+        INNER JOIN pontos AS ponto_final ON segmento.ponto_final = ponto_final.ponto_id
+        WHERE segmento_id = '${id}';
+        `;
         con.connect(function(err) {
             console.log("Conectado ao banco de dados!");
             fazerConsulta(sql).then((result) => {
@@ -95,7 +107,18 @@ router.get('/', async (req, res) => {
     try {
         const token = req.headers.authorization;
         token === process.env.TOKEN ? isValidToken = true : isValidToken = false;
-        const sql = `SELECT * FROM segmentos`;
+        const sql = `
+                    SELECT 
+                        segmento.segmento_id,
+                        segmento.status,
+                        segmento.distancia,
+                        segmento.direcao,
+                        ponto_inicial.nome AS ponto_inicial,
+                        ponto_final.nome AS ponto_final
+                    FROM segmentos AS segmento
+                    INNER JOIN pontos AS ponto_inicial ON segmento.ponto_inicial = ponto_inicial.ponto_id
+                    INNER JOIN pontos AS ponto_final ON segmento.ponto_final = ponto_final.ponto_id;
+                    `;
         con.connect(function(err) {
             console.log("Conectado ao banco de dados!");
             fazerConsulta(sql).then((result) => {
